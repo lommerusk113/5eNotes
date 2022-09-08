@@ -1,0 +1,88 @@
+﻿@page "/Notes"
+@model _5eNotes.Pages.Inventory.IndexModel
+@{
+}
+
+
+
+@section scripts{
+    <script src="~/lib/vue.js" asp-append-version="true"></script>
+    <script src="~/pages/Inventory/Inventory.cshtml.js" asp-append-version="true"></script>
+}
+
+
+
+
+<div id="app">
+    <div class="d-flex flex-column-reverse flex-xxl-row flex-xl-row border">
+        <div class="border border-dark rounded col-12 col-xxl-8 col-xl-8 mt-5 mt-xxl-0 mt-xl-0">
+            <div class="bg-dark p-1 ">
+                <h5 class="text-white mx-5">Notes</h5>
+            </div>
+            <div>
+                <table class="d-sm-table table-hover border w-100">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Date Created</th>
+                        </tr>
+                        <tr>
+                            <th><input  class="form-control form-control-sm" type="text" placeholder="Search..."/></th>
+                            <th><input class="form-control form-control-sm" type="text" placeholder="Search..."/></th>
+                            <th>
+                                <select class="form-select form-select-sm">
+                                    <option v-for="(element, index) in Categories" :value="element">{{element.CategoryName}}</option>
+                                </select>
+                            </th>
+                            <th><input class="form-control form-control-sm" type="text" placeholder="Date..."/></th>
+                        </tr>
+                    </thead>
+                    <tbody class="border border-bottom-0 border-left-0 border-right-0 border-top-1 border-dark">
+                        <tr v-for="items in categories">
+                            <td>{{items.categoryname}}</td>
+                        </tr>
+                        <tr class="text-center" v-if="!categories">
+                            <td class="p-2" colspan=4>
+                                No Categories found.
+                            </td>
+                        </tr>
+                        <tr class="border border-bottom-0 border-left-0 border-right-0 border-top-1 border-dark">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="d-flex flex-row-reverse p-2"><button class="btn-primary btn">Add Notes</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 col-xxl-4 col-xl-4 mt-5 mt-xxl-0 mt-xl-0">
+            <div class=" mx-xxl-5 mx-xl-5 border border-dark rounded ">
+                <div class="bg-dark p-1 ">
+                    <h5 class="text-white mx-5">Notes Categories</h5>
+                </div>
+                <div class="px-3">
+                    <div>
+                        <table class="d-sm-table mx-auto table-hover w-100">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <tr v-for="items in categories">
+                                    <td>{{items.categoryname}}</td>
+                                </tr>
+                                <tr v-if="!categories"><td>
+                                    No Categories found.
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex flex-row-reverse mt-3">
+                        <button class="btn-primary btn mb-2">Add Category</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

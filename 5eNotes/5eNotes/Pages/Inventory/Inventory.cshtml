@@ -1,0 +1,169 @@
+﻿@page "/Inventory"
+@model _5eNotes.Pages.Inventory.IndexModel
+@{
+}
+
+
+
+@section scripts{
+    <script src="~/lib/vue.js" asp-append-version="true"></script>
+    <script src="~/pages/Inventory/Inventory.cshtml.js" asp-append-version="true"></script>
+}
+
+
+
+
+<div id="app">
+    <div class="mx-auto border border-dark rounded mt-5 col-xxl-4 col-xl-4 col-lg-6 col-md-8 col-sm-10 mb-5">
+        <div class="bg-dark p-1 ">
+            <h5 class="text-white mx-5">Inventory</h5>
+        </div>
+         <div>
+             <div class="col-6 mx-auto">
+                 <select class="form-select mt-3 mb-2">
+                     <option v-for="(element, index) in inventories" :value="element">{{element.inventoryName | inventoryNameFilter}}</option>
+                 </select>
+             </div>
+            @* <div v-for="(element, index) in inventories" class="mx-auto d-inline">
+                <button class="btn-dark btn mx-1 mb-3" v-on:click="changeInventory(index, element)" v-if="searchFilter.inventoryId != element.inventoryId">{{index + 1}}</button>
+                <button class="btn-primary btn mx-1 mb-3" v-on:click="changeInventory(index, element)" v-else>{{index + 1}}</button>
+            </div>*@
+             <div class="col-12 mx-auto">
+               <div class="col-12 mx-auto border-top border-dark p-2 d-flex flex-row-reverse">        
+                   <button class="btn-primary btn mb-1 btn-sm" v-on:click="openInventoryModal">New Inventory</button>
+                   <button class="btn-danger btn mb-1 mx-1 btn-sm" v-on:click="DeleteInventory">Delete</button>
+               </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div  class="mx-auto mt-5 border border-dark rounded col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 overflow-auto">
+        <div class="bg-dark p-1"> 
+            <h5 class="text-white mx-5">{{currentInventory.inventoryName | inventoryNameFilter}}</h5>
+        </div>
+        <table class="table table-hover table-sm">
+                <thead class="align-middle bg-white">
+                    <tr class="table-active" >
+                        <th v-on:click="orderBy(1)" scope="col" class="text-align-center mx-auto col-6">Name <template v-if="searchFilter.orderBy == 1"><i v-if="searchFilter.orderByDirection == 0" class="bi bi-sort-up-alt"></i><i v-else class="bi bi-sort-down"></i></template></th>
+                        <th v-on:click="orderBy(2)" scope="col">Value <template v-if="searchFilter.orderBy == 2"><i v-if="searchFilter.orderByDirection == 0" class="bi bi-sort-up-alt"></i><i v-else class="bi bi-sort-down"></i></template></th>
+                        <th v-on:click="orderBy(3)" scope="col">Rarity <template v-if="searchFilter.orderBy == 3"><i v-if="searchFilter.orderByDirection == 0" class="bi bi-sort-up-alt"></i><i v-else class="bi bi-sort-down"></i></template></th>
+                        <th v-on:click="orderBy(4)" scope="col">Quantity <template v-if="searchFilter.orderBy == 4"><i v-if="searchFilter.orderByDirection == 0" class="bi bi-sort-up-alt"></i><i v-else class="bi bi-sort-down"></i></template></th>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                      <tr>
+                        <td><input class=" form-control input-xs" v-model="searchFilter.itemName"/></td>
+                        <td><input class=" form-control input-xs" v-model="searchFilter.value" type="number"/></td>
+                        <td>
+                            <select class="form-select input-xs" v-model="searchFilter.rarity">
+                                <option value=0></option>
+                                <option value=1>Common</option>
+                                <option value=2>Uncommon</option>
+                                <option value=3>Rare</option>
+                                <option value=4>Very Rare</option>
+                            </select>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="text-center" v-for="(item, index) in items">                       
+                            <td v-on:click="openEditItemModal(item)">{{item.itemName | nameFilter}}</td>
+                            <td v-on:click="openEditItemModal(item)">{{item.value | valueFilter}}</td>
+                            <td v-on:click="openEditItemModal(item)">{{item.rarity | rarity}}</td>
+                            <td v-on:click="openEditItemModal(item)" class="col-2">{{item.quantity | quantityFilter}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+              <div class="d-flex flex-row-reverse">
+                  <button class="btn btn-success" v-on:click="openNewItemModal"><i class="bi bi-plus-circle"></i></button>
+                  <button class="btn-danger btn mx-2" v-on:click="DeleteItem(item)"><i class="bi bi-x-circle"></i></button>
+                  <button class="btn-info btn" v-on:click="DeleteItem(item)"><i class="bi bi-arrow-right-circle"></i></button>
+              </div>
+
+            
+
+            @*        Modals        *@
+            <div class="modal" id="newInventoryModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Create New Inventory</h5>
+                            <button v-on:click="closeInventoryModal" type="button" class="close btn" data-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input v-model="newInventoryName" class="form-control" type="text" placeholder="Inventory Name"/>
+                            <div class="row mt-2">
+                                <button class=" w-25 btn-primary btn mx-auto me-3" v-on:click="CreateInventory">Create</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal" id="newItemModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add a new item</h5>
+                            <button v-on:click="closeNewItemModal" type="button" class="close btn" data-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input v-model="newItem.itemName" class="form-control row mx-auto" type="text" placeholder="Item Name"/>
+                            <input v-model="newItem.value" class="mt-2 form-control row mx-auto" type="text" placeholder="Value"/>
+                            <select class=" mt-2 form-select" v-model="newItem.rarity">
+                                    <option value=0></option>
+                                    <option value=1>Common</option>
+                                    <option value=2>Uncommon</option>
+                                    <option value=3>Rare</option>
+                                    <option value=4>Very Rare</option>
+                                </select>
+                            <textarea v-model="newItem.description" class="mt-2 form-control row mx-auto" placeholder="Description"></textarea>
+                            <h3 class="mt-3">Quantity</h3>
+                            <div class="mt-2 mx-auto">
+                                <button class="mx-auto w-50 btn-success btn" v-on:click="changeQuantity(1)">Add <i class="bi bi-plus-circle"></i></button>
+                                <input class="mx-auto w-50 text-center form-control" type="number"  v-model="newItem.quantity" min="0"/>
+                                <button class="mx-auto w-50 btn-danger btn" v-on:click="changeQuantity(0)">Remove <i class="bi bi-dash-circle"></i></button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" v-on:click="CreateItem" class="btn btn-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="editItemModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Your Item</h5>
+                            <button v-on:click="closeEditModal" type="button" class="close btn" data-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body col">
+                            <input class="form-control" placeholder="Item Name" v-model="editItem.itemName"/>
+                            <input class="mt-2 form-control" placeholder="Value"  v-model="editItem.value"/>
+                            <select class=" mt-2 form-select" v-model="editItem.rarity">
+                                    <option value=0></option>
+                                    <option value=1>Common</option>
+                                    <option value=2>Uncommon</option>
+                                    <option value=3>Rare</option>
+                                    <option value=4>Very Rare</option>
+                            </select>
+                            <textarea class="mt-2 form-control" placeholder="Description" v-model="editItem.description"></textarea>
+                            <h3 class="mt-3">Quantity</h3>
+                            <div class="mt-2 mx-auto col-6">
+                                <button class="mx-auto col-6 btn-success btn" v-on:click="changeQuantity(1, 1)">Add <i class="bi bi-plus-circle"></i></button>
+                                <input class="mx-auto col-6 text-center form-control" type="number"   v-model="editItem.quantity" min="0"/>
+                                <button class="mx-auto col-6 btn-danger btn" v-on:click="changeQuantity(0, 1)">Remove <i class="bi bi-dash-circle"></i></button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" v-on:click="UpdateItem" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>
