@@ -8,7 +8,6 @@ namespace _5eNotes.Repositories.Inventory
     public class InventoryRepository
     {
    
-        //public string ConnectionString = "Server=192.168.60.47; Database=STUDENT; Trusted_connection = True; MultipleActiveResultSets = true";
         public string ConnectionString = "Server=LOCALHOST; Database=DNDNOTES; Trusted_connection = True; MultipleActiveResultSets = true";
  
 
